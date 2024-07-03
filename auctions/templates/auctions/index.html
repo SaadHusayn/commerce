@@ -1,0 +1,17 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+        <h2>Active Listings</h2>
+        {% for listing in listings %}
+            <img src="{% static 'invisibility-cloak.jpeg' %}" alt="Photo of {{listing.title}}">
+            {{listing.title}}
+            {{listing.price}}
+            {{listing.time}}
+        {% endfor %}
+        
+        {% else %}
+        <h2>Log in to see the active listings.</h2>
+    {% endif %}
+    
+{% endblock %}
