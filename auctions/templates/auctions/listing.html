@@ -1,0 +1,11 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<h1>Listing: {{listing.title}}</h1>
+<button>WatchList</button>
+<img src="{{listing.image.url}}" alt="{{listing.title}}">
+{{listing.description}}
+
+
+{% endblock %}

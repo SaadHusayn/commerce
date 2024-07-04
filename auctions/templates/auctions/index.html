@@ -2,21 +2,16 @@
 {% load static %}
 
 {% block body %}
-    {% if user.is_authenticated %}
-        <h2>Active Listings</h2>
-        {% for listing in listings %}
-            {% if listing.image %}
-                <img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}">
-            {% endif %}
-            {{listing.title}}
-            {{listing.price}}
-            {{listing.time}}
-        {% empty %}
-            <h5>No Listings To Show</h5>
-        {% endfor %}
-        
-        {% else %}
-        <h2>Log in to see the active listings.</h2>
-    {% endif %}
+    <h2>Active Listings</h2>
+    {% for listing in listings %}
+        {% if listing.image %}
+           <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
+        {% endif %}
+        {{listing.title}}
+        {{listing.price}}
+        {{listing.time}}
+    {% empty %}
+        <h5>No Listings To Show</h5>
+    {% endfor %}
     
 {% endblock %}

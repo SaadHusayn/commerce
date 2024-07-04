@@ -10,13 +10,21 @@ from django.utils import timezone
 from .models import User, ListingInformation
 
 class ListingForm(forms.ModelForm):
+
     class Meta:
+        labels = {
+            "title":"Title",
+            "description":"Description",
+            "price":"Initial Bid",
+            "image":"Item Image",
+            "category":"Category"
+        }
         model = ListingInformation
         fields = ['title', 'description', 'price', 'image', 'category']
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": ListingInformation.objects.all()
+        "listings": ListingInformation.objects.filter(isListingOpen = True).all()
     })
 
 
@@ -87,4 +95,9 @@ def createlisting(request):
 
     return render(request, 'auctions/createlisting.html', {
         "ListingForm": form
+    })
+
+def listing(request, listingID):
+    return render(request, "auctions/listing.html", {
+        "listing": ListingInformation.objects.get(pk = listingID)
     })
