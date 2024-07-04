@@ -10,10 +10,10 @@ class ListingInformation(models.Model):
     title = models.CharField(max_length=64)
     description = models.TextField(max_length=200)
     price = models.FloatField()
-    image = models.ImageField(blank=True, upload_to="photos")
+    image = models.ImageField(blank=True, upload_to="auctions/images/")
     category = models.CharField(max_length=64, blank=True)
     lister = models.ForeignKey(User, on_delete=models.CASCADE , related_name="listings")
-    time = models.DateTimeField()
+    time = models.DateTimeField(auto_now_add=True)
     isListingOpen = models.BooleanField(default=True)
 
     def __str__(self):

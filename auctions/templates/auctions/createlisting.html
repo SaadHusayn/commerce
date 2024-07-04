@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<h3>Create Listing</h3>
+
+{% if message %}
+{{message}}
+{% endif %}
+
+<form enctype="multipart/form-data" action="{% url 'auctions:createlisting' %}" method="post">
+    {% csrf_token %}
+    {{ListingForm}}
+    <input type="submit" value="Create Listing">
+</form>
+
+
+{% endblock %}
