@@ -100,7 +100,6 @@ def createlisting(request):
 def listing(request, listingID):
     watchlisted = False
     if request.user.is_authenticated:
-        print(f"{listingID} {type(listingID)}")
         w = Watchlist.objects.filter(listing_id = listingID, user = request.user)
 
         if not w:
@@ -126,4 +125,6 @@ def watchlist(request):
         
         return HttpResponseRedirect(reverse("auctions:listing", args=(listingID, )))
 
-    return render(request, "auctions/watchlist.html")
+    return render(request, "auctions/watchlist.html", {
+        "watchlist": Watchlist.objects.filter(user = request.user).all()
+    })
