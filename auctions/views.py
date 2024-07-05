@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
+from django.contrib.auth.decorators import login_required
 import datetime
 from django.utils import timezone
 
@@ -79,7 +80,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-
+@login_required
 def createlisting(request):
     if request.method == "POST":
         form  = ListingForm(request.POST, request.FILES)
@@ -112,6 +113,7 @@ def listing(request, listingID):
         "watchlisted": watchlisted
     })
 
+@login_required
 def watchlist(request):
     if request.method == "POST":
         pleaseWatchlist = int(request.POST["pleaseWatchlist"])
