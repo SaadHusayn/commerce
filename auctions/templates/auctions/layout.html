@@ -28,6 +28,10 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auctions:createlisting' %}">Create Listing</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'auctions:watchlist' %}">Watchlist</a>
+                </li>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auctions:login' %}">Log In</a>

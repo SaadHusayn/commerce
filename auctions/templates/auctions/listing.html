@@ -3,7 +3,19 @@
 {% block body %}
 
 <h1>Listing: {{listing.title}}</h1>
-<button>WatchList</button>
+{% if user.is_authenticated %}
+    <form action="{% url 'auctions:watchlist' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="listing_id" value="{{listing.id}}">
+        {% if watchlisted %}
+            <input type="hidden" name="pleaseWatchlist" value="0">
+            <input type="submit" value="Remove From Watchlist">
+        {% else %}
+        <input type="hidden" name="pleaseWatchlist" value="1">
+        <input type="submit" value="Watchlist">
+        {% endif %}
+    </form>
+{% endif %}
 <img src="{{listing.image.url}}" alt="{{listing.title}}">
 {{listing.description}}
 

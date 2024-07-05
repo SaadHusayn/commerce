@@ -7,7 +7,7 @@ from django import forms
 import datetime
 from django.utils import timezone
 
-from .models import User, ListingInformation
+from .models import User, ListingInformation, Watchlist
 
 class ListingForm(forms.ModelForm):
 
@@ -98,6 +98,32 @@ def createlisting(request):
     })
 
 def listing(request, listingID):
+    watchlisted = False
+    if request.user.is_authenticated:
+        print(f"{listingID} {type(listingID)}")
+        w = Watchlist.objects.filter(listing_id = listingID, user = request.user)
+
+        if not w:
+            watchlisted = False
+        else:
+            watchlisted = True
+
     return render(request, "auctions/listing.html", {
-        "listing": ListingInformation.objects.get(pk = listingID)
+        "listing": ListingInformation.objects.get(pk = listingID),
+        "watchlisted": watchlisted
     })
+
+def watchlist(request):
+    if request.method == "POST":
+        pleaseWatchlist = int(request.POST["pleaseWatchlist"])
+        listingID = int(request.POST["listing_id"])
+        if pleaseWatchlist:
+            w = Watchlist(user=request.user, listing_id = listingID)
+            w.save()
+        else:
+            w = Watchlist.objects.filter(user=request.user, listing_id = listingID)
+            w.delete()
+        
+        return HttpResponseRedirect(reverse("auctions:listing", args=(listingID, )))
+
+    return render(request, "auctions/watchlist.html")
