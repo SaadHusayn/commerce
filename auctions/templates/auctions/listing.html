@@ -1,7 +1,6 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-
 <h1>Listing: {{listing.title}}</h1>
 {% if user.is_authenticated %}
     <form action="{% url 'auctions:watchlist' %}" method="POST">
@@ -17,7 +16,31 @@
     </form>
 {% endif %}
 <img src="{{listing.image.url}}" alt="{{listing.title}}">
-{{listing.description}}
-
-
+<h5>{{listing.description}}</h5>
+<h5>{{listing.price}}</h5>
+{% if user.is_authenticated %}
+    {% if creatorIsViewingTheList %}
+        <button>Close</button>
+    {% else %}
+        <form action="{% url 'auctions:listing' listing.id%}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="isBidingForm" value="1">
+            
+            {% if currentBidder %}
+            <p>{{numBids}} bid(s) so far. {{currentBidder}} bid is the current bid</p>
+            {% else %}
+            <p>{{numBids}} bid(s) so far.</p>
+            {% endif %}
+            
+            <input type="hidden" name="listing_id" value="{{listing.id}}">
+            <input type="number" min="0" step="0.01" name="bidPrice" placeholder="Bid">
+            {% if message %}
+                {{message}}
+            {% endif %}
+            <input type="submit" value="Place Bid">
+        </form>
+    {% endif %}
+{% elif listing.isListingOpen %}
+<a href="{% url 'auctions:login' %}">Login to place bid on this listing</a>
+{% endif %}
 {% endblock %}

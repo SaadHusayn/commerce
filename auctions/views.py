@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.utils import timezone
 
-from .models import User, ListingInformation, Watchlist
+from .models import User, ListingInformation, Watchlist, Bid
 
 class ListingForm(forms.ModelForm):
 
@@ -98,8 +98,18 @@ def createlisting(request):
         "ListingForm": form
     })
 
+def getCurrentBidder(listingID):
+    bids = Bid.objects.filter(listing_id = listingID)
+    if not bids:
+        return None
+    else:
+        return bids.latest("id").bidder
+
 def listing(request, listingID):
+    listingObj = ListingInformation.objects.get(pk = listingID)
     watchlisted = False
+    creatorIsViewingTheList = False
+    message=""
     if request.user.is_authenticated:
         w = Watchlist.objects.filter(listing_id = listingID, user = request.user)
 
@@ -108,9 +118,45 @@ def listing(request, listingID):
         else:
             watchlisted = True
 
+        creatorIsViewingTheList = (request.user == listingObj.lister)
+
+    if request.method == "POST":
+        isBidingForm = int(request.POST["isBidingForm"])
+        if isBidingForm:
+            price = float(request.POST["bidPrice"])
+            listingID = int(request.POST["listing_id"])
+            
+            bidCurrentPrice = listingObj.price
+            currentBids = Bid.objects.filter(listing_id = listingID)
+            numBids = currentBids.count()
+
+            validBid = True
+            if numBids == 0:
+
+                if(price <= bidCurrentPrice):
+                    message = "Bid Not Placed. Bid price is less than the starting price of the listing."
+                    validBid = False
+            
+            else:
+                for eachBid in currentBids:
+                    if eachBid.bidInitialPrice > price:
+                        message = "Bid Not Placed. Bid price is less than the highest bid"
+                        validBid = False
+
+            
+            if validBid:
+                listingObj.price = price
+                listingObj.save()
+                newBid = Bid(bidInitialPrice = price, bidder = request.user, listing = listingObj)
+                newBid.save()
+
     return render(request, "auctions/listing.html", {
-        "listing": ListingInformation.objects.get(pk = listingID),
-        "watchlisted": watchlisted
+        "listing": listingObj,
+        "watchlisted": watchlisted,
+        "creatorIsViewingTheList": creatorIsViewingTheList,
+        "message":message,
+        "numBids": Bid.objects.filter(listing_id = listingID).count(),
+        "currentBidder": getCurrentBidder(listingID)
     })
 
 @login_required
@@ -130,3 +176,9 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "watchlist": Watchlist.objects.filter(user = request.user).all()
     })
+
+def bid(request):
+    pass
+
+
+
