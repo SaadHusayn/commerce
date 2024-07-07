@@ -16,12 +16,12 @@ class ListingForm(forms.ModelForm):
         labels = {
             "title":"Title",
             "description":"Description",
-            "price":"Initial Bid",
+            "bidCurrentPrice":"Initial Bid",
             "image":"Item Image",
             "category":"Category"
         }
         model = ListingInformation
-        fields = ['title', 'description', 'price', 'image', 'category']
+        fields = ['title', 'description', 'bidCurrentPrice', 'image', 'category']
 
 def index(request):
     return render(request, "auctions/index.html", {
@@ -99,17 +99,19 @@ def createlisting(request):
     })
 
 def getCurrentBidder(listingID):
+    currentBidder = None
     bids = Bid.objects.filter(listing_id = listingID)
     if not bids:
-        return None
+        pass
     else:
-        return bids.latest("id").bidder
-
-def listing(request, listingID):
-    listingObj = ListingInformation.objects.get(pk = listingID)
+        currentBidder = bids.latest("id").bidder
+    
+    return currentBidder
+    
+def getRequestFlags(request, listingID):
     watchlisted = False
     creatorIsViewingTheList = False
-    message=""
+
     if request.user.is_authenticated:
         w = Watchlist.objects.filter(listing_id = listingID, user = request.user)
 
@@ -118,37 +120,35 @@ def listing(request, listingID):
         else:
             watchlisted = True
 
-        creatorIsViewingTheList = (request.user == listingObj.lister)
+        creatorIsViewingTheList = (request.user == ListingInformation.objects.get(pk = listingID).lister)
+    
+    return watchlisted, creatorIsViewingTheList
+
+def listing(request, listingID):
+    listingObj = ListingInformation.objects.get(pk = listingID)
+    message=""
+    watchlisted, creatorIsViewingTheList = getRequestFlags(request, listingID)
+    
+
 
     if request.method == "POST":
         isBidingForm = int(request.POST["isBidingForm"])
         if isBidingForm:
+
             price = float(request.POST["bidPrice"])
-            listingID = int(request.POST["listing_id"])
+
+            if(price <= listingObj.bidCurrentPrice):
+                message = "Bid Not Placed. Bid price is less than the current price of the listing"
+            else:
+                listingObj.bidCurrentPrice = price
+                listingObj.save()
+                newBid = Bid(bidPrice = price, bidder = request.user, listing = listingObj)
+                newBid.save()
             
-            bidCurrentPrice = listingObj.price
-            currentBids = Bid.objects.filter(listing_id = listingID)
+            currentBids = listingObj.bids.all()
             numBids = currentBids.count()
 
-            validBid = True
-            if numBids == 0:
-
-                if(price <= bidCurrentPrice):
-                    message = "Bid Not Placed. Bid price is less than the starting price of the listing."
-                    validBid = False
-            
-            else:
-                for eachBid in currentBids:
-                    if eachBid.bidInitialPrice > price:
-                        message = "Bid Not Placed. Bid price is less than the highest bid"
-                        validBid = False
-
-            
-            if validBid:
-                listingObj.price = price
-                listingObj.save()
-                newBid = Bid(bidInitialPrice = price, bidder = request.user, listing = listingObj)
-                newBid.save()
+    currentBidder = getCurrentBidder(listingID)
 
     return render(request, "auctions/listing.html", {
         "listing": listingObj,
@@ -156,7 +156,7 @@ def listing(request, listingID):
         "creatorIsViewingTheList": creatorIsViewingTheList,
         "message":message,
         "numBids": Bid.objects.filter(listing_id = listingID).count(),
-        "currentBidder": getCurrentBidder(listingID)
+        "currentBidder": currentBidder,
     })
 
 @login_required

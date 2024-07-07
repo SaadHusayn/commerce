@@ -8,7 +8,7 @@
            <a href="{% url 'auctions:listing' object.listing.id %}"><img src="{{ object.listing.image.url }}" alt="Photo of {{object.listing.title}}"></a> 
         {% endif %}
         {{object.listing.title}}
-        {{object.listing.price}}
+        {{object.listing.bidCurrentPrice}}
         {{object.listing.time}}
         {% empty %}
         <h5>No Listings Watchlisted.</h5>

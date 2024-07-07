@@ -17,7 +17,7 @@
 {% endif %}
 <img src="{{listing.image.url}}" alt="{{listing.title}}">
 <h5>{{listing.description}}</h5>
-<h5>{{listing.price}}</h5>
+<h5>{{listing.bidCurrentPrice}}</h5>
 {% if user.is_authenticated %}
     {% if creatorIsViewingTheList %}
         <button>Close</button>
@@ -32,7 +32,7 @@
             <p>{{numBids}} bid(s) so far.</p>
             {% endif %}
             
-            <input type="hidden" name="listing_id" value="{{listing.id}}">
+
             <input type="number" min="0" step="0.01" name="bidPrice" placeholder="Bid">
             {% if message %}
                 {{message}}
