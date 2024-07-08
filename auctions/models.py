@@ -2,7 +2,11 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class User(AbstractUser):
-    pass
+    
+    def __str__(self):
+        return self.username
+    
+    
 
 class ListingInformation(models.Model):
     title = models.CharField(max_length=64)
@@ -13,6 +17,7 @@ class ListingInformation(models.Model):
     lister = models.ForeignKey(User, on_delete=models.CASCADE , related_name="listings")
     time = models.DateTimeField(auto_now_add=True)
     isListingOpen = models.BooleanField(default=True)
+    winner =  models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f"{self.title} listed by {self.lister}"
@@ -22,6 +27,7 @@ class Comment(models.Model):
     content = models.CharField(max_length=120)
     writer = models.ForeignKey(User, on_delete=models.CASCADE,  related_name="comments")
     listing = models.ForeignKey(ListingInformation, on_delete=models.CASCADE, related_name="comments")
+    time = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.writer}: {self.content}"

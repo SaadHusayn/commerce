@@ -144,9 +144,14 @@ def listing(request, listingID):
                 listingObj.save()
                 newBid = Bid(bidPrice = price, bidder = request.user, listing = listingObj)
                 newBid.save()
-            
-            currentBids = listingObj.bids.all()
-            numBids = currentBids.count()
+
+        
+        else:
+
+            listingObj.isListingOpen = 0 
+            listingObj.winner = getCurrentBidder(listingID)
+            listingObj.save()
+        
 
     currentBidder = getCurrentBidder(listingID)
 

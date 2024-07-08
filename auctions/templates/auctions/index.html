@@ -4,12 +4,14 @@
 {% block body %}
     <h2>Active Listings</h2>
     {% for listing in listings %}
-        {% if listing.image %}
-           <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
+        {% if listing.isListingOpen %}
+            {% if listing.image %}
+            <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
+            {% endif %}
+            {{listing.title}}
+            {{listing.bidCurrentPrice}}
+            {{listing.time}}
         {% endif %}
-        {{listing.title}}
-        {{listing.bidCurrentPrice}}
-        {{listing.time}}
     {% empty %}
         <h5>No Listings To Show</h5>
     {% endfor %}
