@@ -13,7 +13,7 @@ class ListingInformation(models.Model):
     description = models.TextField(max_length=200)
     bidCurrentPrice = models.FloatField()
     image = models.ImageField(blank=True, upload_to="auctions/images/")
-    category = models.CharField(max_length=64, blank=True)
+    category = models.CharField(max_length=64, blank=True, null=True)
     lister = models.ForeignKey(User, on_delete=models.CASCADE , related_name="listings")
     time = models.DateTimeField(auto_now_add=True)
     isListingOpen = models.BooleanField(default=True)

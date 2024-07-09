@@ -2,18 +2,32 @@
 {% load static %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-    {% for listing in listings %}
-        {% if listing.isListingOpen %}
+    <h2>{{ message }}</h2>
+    {% if isWatchlist %}
+
+        {% for object in watchlist %}
+            {% if object.listing.image %}
+            <a href="{% url 'auctions:listing' object.listing.id %}"><img src="{{ object.listing.image.url }}" alt="Photo of {{object.listing.title}}"></a> 
+            {% endif %}
+            {{object.listing.title}}
+            {{object.listing.bidCurrentPrice}}
+            {{object.listing.time}}
+            {% empty %}
+            <h5>No Listings Watchlisted.</h5>
+        {% endfor %}
+
+    {% else %}
+
+        {% for listing in listings %}
             {% if listing.image %}
-            <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
+                <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
             {% endif %}
             {{listing.title}}
             {{listing.bidCurrentPrice}}
             {{listing.time}}
-        {% endif %}
-    {% empty %}
-        <h5>No Listings To Show</h5>
-    {% endfor %}
+        {% empty %}
+            <h5>No Active Listings To Show</h5>
+        {% endfor %}
     
+    {% endif %}
 {% endblock %}

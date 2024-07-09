@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.utils import timezone
 
-from .models import User, ListingInformation, Watchlist, Bid
+from .models import User, ListingInformation, Watchlist, Bid, Comment
 
 class ListingForm(forms.ModelForm):
 
@@ -25,7 +25,8 @@ class ListingForm(forms.ModelForm):
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": ListingInformation.objects.filter(isListingOpen = True).all()
+        "listings": ListingInformation.objects.filter(isListingOpen = True).all(),
+        "message": "Acitive Listings"
     })
 
 
@@ -162,6 +163,7 @@ def listing(request, listingID):
         "message":message,
         "numBids": Bid.objects.filter(listing_id = listingID).count(),
         "currentBidder": currentBidder,
+        "comments": listingObj.comments.all()
     })
 
 @login_required
@@ -179,11 +181,44 @@ def watchlist(request):
         return HttpResponseRedirect(reverse("auctions:listing", args=(listingID, )))
 
     return render(request, "auctions/watchlist.html", {
-        "watchlist": Watchlist.objects.filter(user = request.user).all()
+        "message": "Watchlist",
+        "watchlist": Watchlist.objects.filter(user = request.user).all(),
+        "isWatchlist": 1
     })
 
-def bid(request):
-    pass
+@login_required
+def saveComment(request, listingID):
+    listingObj = ListingInformation.objects.get(pk = listingID)
+
+    if request.method == "POST":
+        commentContent = request.POST["comment"]
+
+        newComment = Comment(content = commentContent, writer = request.user, listing = listingObj)
+        newComment.save()
+
+        return HttpResponseRedirect(reverse("auctions:listing", args=(listingID, )))
 
 
+def closelistings(request):
+    return render(request, 'auctions/index.html', {
+        "listings": ListingInformation.objects.filter(isListingOpen = False).all(),
+        "message": "Close Listings"
+    })
 
+def category(request, categoryName = None):
+    if not categoryName:
+        categories = []
+        allListingsWithCategory = ListingInformation.objects.exclude(category__isnull=True).exclude(category__exact='').filter(isListingOpen = True)
+        for listing in allListingsWithCategory:
+            categories.append(listing.category)
+        
+        return render(request, 'auctions/category.html', {
+            "categories": categories
+        })
+    else:
+        categoryListings = ListingInformation.objects.filter(category = categoryName)
+        return render(request, 'auctions/index.html', {
+            "message": f"Category Listing: {categoryName}",
+            "listings": categoryListings
+        })
+    

@@ -57,7 +57,7 @@
     
     {% else %}
 
-    <a href="{% url 'auctions:login' %}">Login to place bid on this listing</a>
+    <a href="{% url 'auctions:login' %}">Login to place bid on this listing.</a>
 
     {% endif %}
     
@@ -75,6 +75,36 @@
         <p>Listing Closed at {{ listing.bidCurrentPrice }} with {{ numBids }} bid(s).</p>
     {% endif %}
 
+{% endif %}
+
+<h5>Details</h5>
+
+<li>Listed by: {{ listing.lister }}</li>
+{% if listing.category %}
+   <li>Category:  <a href="{% url 'auctions:categoryListings' listing.category %}">{{listing.category}}</a></li>
+{% else %}
+    <li>Category: No Category Listed</li>
+{% endif %}
+<li>Created On: {{listing.time}}</li>
+
+<h5>Comments:</h5>
+{% for comment in comments %}
+	
+	<p>{{comment.writer}} on {{comment.time}}:</p>
+	<p>{{comment.content}}</p>
+	
+{% empty %}
+	(No Comments on this listing so far.)
+{% endfor %}
+
+{% if user.is_authenticated %}
+	<form action="{% url 'auctions:saveComment' listing.id %}" method="post">
+		{% csrf_token %}
+		<input type="text" name="comment" placeholder="Write Comment">
+		<input type="submit" value="Save">
+	</form>
+{% else %}
+	<a href="{% url 'auctions:login' %}">Login to write Comment on this listing.</a>
 {% endif %}
 
 {% endblock %}
