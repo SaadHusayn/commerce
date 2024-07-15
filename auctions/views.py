@@ -180,7 +180,7 @@ def watchlist(request):
         
         return HttpResponseRedirect(reverse("auctions:listing", args=(listingID, )))
 
-    return render(request, "auctions/watchlist.html", {
+    return render(request, "auctions/index.html", {
         "message": "Watchlist",
         "watchlist": Watchlist.objects.filter(user = request.user).all(),
         "isWatchlist": 1
@@ -221,4 +221,15 @@ def category(request, categoryName = None):
             "message": f"Category Listing: {categoryName}",
             "listings": categoryListings
         })
-    
+
+def userProfile(request, username):
+
+    user = User.objects.get(username = username)
+
+    listings = user.listings.all()
+
+    return render(request, 'auctions/user.html', {
+        "userInfo":user,
+        "activeListings":listings.filter(isListingOpen = 1),
+        "closeListings":listings.filter(isListingOpen = 0)
+    })

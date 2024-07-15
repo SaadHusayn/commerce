@@ -2,10 +2,46 @@
 {% load static %}
 
 {% block body %}
-    <h2>{{ message }}</h2>
+    <h1 class="display-2 text-center mt-5">{{ message }}</h1>
+    <hr class="w-50 mx-auto">
+
+    
+
+    
     {% if isWatchlist %}
 
-        {% for object in watchlist %}
+        <div class="container-fluid">
+            <div class="row">
+                {% for object in watchlist %}
+                <div class="col-12">
+                    <div class="card mb-3" >
+                        <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if object.listing.image %}
+                                <a href="{% url 'auctions:listing' object.listing.id %}"><img src="{{ object.listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{object.listing.title}}"></a>
+                            {% else %}
+                                <a href="{% static 'auctions/default.png' %}"><img src="{{ object.listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{object.listing.title}}"></a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                            <h5 class="card-title">{{object.listing.title}}</h5>
+                            <p class="card-text">Price: {{object.listing.bidCurrentPrice}}$</p>
+                            <p class="card-text"><small class="text-body-secondary">Listed On: {{object.listing.time}}</small></p>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <h5>No Listings Watchlisted.</h5>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- {% for object in watchlist %}
             {% if object.listing.image %}
             <a href="{% url 'auctions:listing' object.listing.id %}"><img src="{{ object.listing.image.url }}" alt="Photo of {{object.listing.title}}"></a> 
             {% endif %}
@@ -14,20 +50,40 @@
             {{object.listing.time}}
             {% empty %}
             <h5>No Listings Watchlisted.</h5>
-        {% endfor %}
+        {% endfor %} -->
 
     {% else %}
 
-        {% for listing in listings %}
-            {% if listing.image %}
-                <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
-            {% endif %}
-            {{listing.title}}
-            {{listing.bidCurrentPrice}}
-            {{listing.time}}
-        {% empty %}
-            <h5>No Active Listings To Show</h5>
-        {% endfor %}
+        <div class="container-fluid">
+            <div class="row">
+                {% for listing in listings %}
+                <div class="col-12">
+                    <div class="card mb-3" >
+                        <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if listing.image %}
+                                <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
+                            {% else %}
+                                <a href="{% static 'auctions/default.png' %}"><img src="{{ listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                            <h5 class="card-title">{{listing.title}}</h5>
+                            <p class="card-text">Price: {{listing.bidCurrentPrice}}$</p>
+                            <p class="card-text"><small class="text-body-secondary">Listed On: {{listing.time}}</small></p>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <h5>No Active Listings To Show</h5>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     
     {% endif %}
 {% endblock %}

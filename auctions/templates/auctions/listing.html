@@ -79,7 +79,7 @@
 
 <h5>Details</h5>
 
-<li>Listed by: {{ listing.lister }}</li>
+<li>Listed by: <a href="{% url 'auctions:userProfile' listing.lister.username %}">{{ listing.lister }}</a></li>
 {% if listing.category %}
    <li>Category:  <a href="{% url 'auctions:categoryListings' listing.category %}">{{listing.category}}</a></li>
 {% else %}
