@@ -7,17 +7,22 @@
     <div class="d-flex align-items-center py-4">
         
     <main class="form-signin m-auto" style="width: 300px!important;">
-      <form>
+      <form action="{% url 'auctions:login' %}" method="post">
         <img class="mb-4" src="{% static 'auctions/logo.png' %}" alt="" width="72" height="70">
-        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <h1 class="h3 mb-3 fw-normal">Please log in</h1>
+        {% if message %}
+             <h5 class="text-danger">{{ message }}</h5 >
+        {% endif %}
+
+        {% csrf_token %}
     
         <div class="form-floating">
-          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" style="border-bottom-left-radius: 0;
+          <input type="text" name="username"  autofocus class="form-control" id="floatingInput" placeholder="username" style="border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;">
-          <label for="floatingInput">Email address</label>
+          <label for="floatingInput">Username</label>
         </div>
         <div class="form-floating">
-          <input type="password" class="form-control" id="floatingPassword" placeholder="Password" style="border-top-left-radius: 0;
+          <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password" style="border-top-left-radius: 0;
     border-top-right-radius: 0;">
           <label for="floatingPassword">Password</label>
         </div>
@@ -28,27 +33,10 @@
             Remember me
           </label>
         </div>
-        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+        <button class="btn btn-primary w-100 py-2" type="submit">Log in</button>
       </form>
     </main>
     
     </div>
-
-    {% comment %} {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
-    <form action="{% url 'auctions:login' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Username">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Login">
-    </form>
-
-    Don't have an account? <a href="{% url 'auctions:register' %}">Register here.</a> {% endcomment %}
-
+    
 {% endblock %}
