@@ -20,13 +20,13 @@
                             {% if object.listing.image %}
                                 <a href="{% url 'auctions:listing' object.listing.id %}"><img src="{{ object.listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{object.listing.title}}"></a>
                             {% else %}
-                                <a href="{% static 'auctions/default.png' %}"><img src="{{ object.listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{object.listing.title}}"></a>
+                                <a href="{% url 'auctions:listing' object.listing.id %}"><img src="{% static 'auctions/default.png' %}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{object.listing.title}}"></a>
                             {% endif %}
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
-                            <h5 class="card-title">{{object.listing.title}}</h5>
-                            <p class="card-text">Price: {{object.listing.bidCurrentPrice}}$</p>
+                            <h5 class="card-title"><a class="hover-effect text-decoration-none" href="{% url 'auctions:listing' object.listing.id %}">{{object.listing.title}}</a></h5>
+                            <p class="card-text">Price: ${{object.listing.bidCurrentPrice}}</p>
                             <p class="card-text"><small class="text-body-secondary">Listed On: {{object.listing.time}}</small></p>
                             </div>
                         </div>
@@ -41,17 +41,6 @@
             </div>
         </div>
 
-        <!-- {% for object in watchlist %}
-            {% if object.listing.image %}
-            <a href="{% url 'auctions:listing' object.listing.id %}"><img src="{{ object.listing.image.url }}" alt="Photo of {{object.listing.title}}"></a> 
-            {% endif %}
-            {{object.listing.title}}
-            {{object.listing.bidCurrentPrice}}
-            {{object.listing.time}}
-            {% empty %}
-            <h5>No Listings Watchlisted.</h5>
-        {% endfor %} -->
-
     {% else %}
 
         <div class="container-fluid">
@@ -64,13 +53,13 @@
                             {% if listing.image %}
                                 <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
                             {% else %}
-                                <a href="{% static 'auctions/default.png' %}"><img src="{{ listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
+                                <a href="{% url 'auctions:listing' listing.id %}"><img src="{% static 'auctions/default.png' %}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
                             {% endif %}
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
-                            <h5 class="card-title">{{listing.title}}</h5>
-                            <p class="card-text">Price: {{listing.bidCurrentPrice}}$</p>
+                            <h5 class="card-title"><a class="hover-effect text-decoration-none" href="{% url 'auctions:listing' listing.id %}">{{listing.title}}</a></h5>
+                            <p class="card-text">Price: ${{listing.bidCurrentPrice}}</p>
                             <p class="card-text"><small class="text-body-secondary">Listed On: {{listing.time}}</small></p>
                             </div>
                         </div>

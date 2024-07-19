@@ -18,3 +18,17 @@ body {
 footer li a:hover i{
     color: #ffc107;
 }
+
+.hover-effect{
+    color: #DEE2E6 !important;
+}
+
+.hover-effect:hover {
+    color: #ffc107 !important;
+}
+
+@media (max-width: 768px) { 
+    .user-info{
+        width: 100% !important;
+    }
+ }

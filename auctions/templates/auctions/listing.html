@@ -1,38 +1,47 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
 
 {% block body %}
-<h1>Listing: {{listing.title}}</h1> 
 
-<!-- watchlist button starts -->
 
-{% if user.is_authenticated %}
-    <form action="{% url 'auctions:watchlist' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="listing_id" value="{{listing.id}}">
-        {% if watchlisted %}
-            <input type="hidden" name="pleaseWatchlist" value="0">
-            <input type="submit" value="Remove From Watchlist">
-        {% else %}
-        <input type="hidden" name="pleaseWatchlist" value="1">
-        <input type="submit" value="Watchlist">
-        {% endif %}
-    </form>
-{% endif %}
 
-<!-- watchlist button ends -->
 
-<div class="container">
+<div class="container my-5">
     <div class="row g-3">
         <div class="col-lg-6 col-12">
             <div class="d-flex align-items-center justify-content-center ">
-                <img src="{{listing.image.url}}" alt="{{listing.title}}" class="img-fluid rounded-2">
+                {% if listing.image %}
+                    <img src="{{listing.image.url}}" alt="{{listing.title}}" class="img-fluid rounded-2">
+                {% else %}
+                    <img src="{% static 'auctions/default.png' %}" alt="{{listing.title}}" class="img-fluid rounded-2">
+                {% endif %}
              </div>
         </div>
 
         <div class="col-lg-6 col-12 heading">
+            
             <h1 class="  pb-2 border-bottom ">{{listing.title}}</h3>
+            
+<!-- watchlist button starts -->
+            
+            
+            {% if user.is_authenticated %}
+                <form action="{% url 'auctions:watchlist' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="listing_id" value="{{listing.id}}">
+                {% if watchlisted %}
+                    <input type="hidden" name="pleaseWatchlist" value="0">
+                    <input class="btn btn-sm btn-outline-warning" type="submit" value="Remove From Watchlist">
+                {% else %}
+                    <input type="hidden" name="pleaseWatchlist" value="1">
+                    <input class="btn btn-sm btn-outline-warning" type="submit" value="Watchlist">
+                {% endif %}
+                </form>
+            {% endif %}
 
-            <!-- <h3 class="heading pb-2 border-bottom ">${{listing.bidCurrentPrice}}</h3> -->
+<!-- watchlist button ends -->
+
+
             {% if listing.isListingOpen %}
 
             <h3 class="my-2 text-warning">${{listing.bidCurrentPrice}}</h3>
@@ -40,7 +49,7 @@
             {% if user.is_authenticated %}
                 
                 {% if currentBidder %}
-                    <p class="my-2">{{numBids}} bid(s) so far. {{currentBidder}} bid is the current bid</p>
+                    <p class="my-2">{{numBids}} bid(s) so far. <a class="hover-effect text-decoration-none" href="{% url 'auctions:userProfile' currentBidder.username %}">{{currentBidder}}</a> bid is the current bid</p>
                 {% else %}
                     <p class="my-2">{{numBids}} bid(s) so far.</p>
                 {% endif %}
@@ -76,7 +85,7 @@
             
             {% else %}
         
-            <a class="my-2" href="{% url 'auctions:login' %}">Login to place bid on this listing.</a>
+            <a class="my-2 hover-effect"" href="{% url 'auctions:login' %}">Login to place bid on this listing.</a>
         
             {% endif %}
             
@@ -99,20 +108,20 @@
     </div>
 </div>
 
-<nav class="container">
+<nav class="container mb-3">
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Details</button>
-      <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Comments</button>
+      <button class="nav-link  text-warning active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Details</button>
+      <button class="nav-link text-warning" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Comments</button>
       
     </div>
   </nav>
-  <div class="tab-content container" id="nav-tabContent">
+  <div class="tab-content container mb-3" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
         <h5>{{listing.description}}</h5>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item">Listed by: <a href="{% url 'auctions:userProfile' listing.lister.username %}">{{ listing.lister }}</a></li>
+            <li class="list-group-item">Listed by: <a class="text-warning" href="{% url 'auctions:userProfile' listing.lister.username %}">{{ listing.lister }}</a></li>
             {% if listing.category %}
-            <li class="list-group-item">Category:  <a href="{% url 'auctions:categoryListings' listing.category %}">{{listing.category}}</a></li>
+            <li class="list-group-item">Category:  <a class="text-warning" href="{% url 'auctions:categoryListings' listing.category %}">{{listing.category}}</a></li>
             {% else %}
                 <li class="list-group-item">Category: No Category Listed</li>
             {% endif %}
@@ -133,17 +142,12 @@
                         <div data-mdb-input-init class="form-outline mb-4">
                             <input type="text" name="comment" id="addANote" class="form-control" placeholder="Write Comment..." />
                         </div>
-                        <!-- <input type="text" name="comment" placeholder="Write Comment">
-                        <input type="submit" value="Save"> -->
+                        
                     </form>
                 {% else %}
-                    <a href="{% url 'auctions:login' %}">Login to write Comment on this listing.</a>
+                    <a href="{% url 'auctions:login' %}" class="hover-effect">Login to write Comment on this listing.</a>
                 {% endif %}
                     
-                  <!-- <div data-mdb-input-init class="form-outline mb-4">
-                    <input type="text" id="addANote" class="form-control" placeholder="Type comment..." />
-                  </div> -->
-
                   {% for comment in comments %}
 
                     <div class="card mb-4">
@@ -152,7 +156,7 @@
             
                         <div class="d-flex justify-content-between">
                             <div class="d-flex flex-row align-items-center">
-                            <p class="small mb-0 ms-2">{{comment.writer}}</p>
+                            <p class="small mb-0 ms-2"><a class="hover-effect text-decoration-none" href="{% url 'auctions:userProfile' comment.writer.username %}">{{comment.writer}}</a></p>
                             </div>
                             <div class="d-flex flex-row align-items-center">
                             <p class="small text-muted mb-0">{{comment.time}}</p>
@@ -160,9 +164,6 @@
                         </div>
                         </div>
                     </div>
-	
-                    <!-- <p>{{comment.writer}} on {{comment.time}}:</p>
-                    <p>{{comment.content}}</p> -->
                     
                 {% empty %}
                     <div class="card mb-4">
@@ -170,75 +171,7 @@
                         <p>No Comments on this listing so far.</p>
                         </div>
                     </div>
-                    <!-- (No Comments on this listing so far.) -->
                 {% endfor %}
-          
-                  <!-- <div class="card mb-4">
-                    <div class="card-body">
-                      <p>Type your note, and hit enter to add it</p>
-          
-                      <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row align-items-center">
-                          <p class="small mb-0 ms-2">Martha</p>
-                        </div>
-                        <div class="d-flex flex-row align-items-center">
-                          <p class="small text-muted mb-0">July 3, 2024, 6:12 a.m.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-          
-                  <div class="card mb-4">
-                    <div class="card-body">
-                      <p>Type your note, and hit enter to add it</p>
-          
-                      <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row align-items-center">
-                          <p class="small mb-0 ms-2">Johny</p>
-                        </div>
-                        <div class="d-flex flex-row align-items-center">
-                            <p class="small text-muted mb-0">July 3, 2024, 6:12 a.m.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-          
-                  <div class="card mb-4">
-                    <div class="card-body">
-                      <p>Type your note, and hit enter to add it</p>
-          
-                      <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row align-items-center">
-                          <p class="small mb-0 ms-2">Mary Kate</p>
-                        </div>
-                        <div class="d-flex flex-row align-items-center text-body">
-                            <p class="small text-muted mb-0">July 3, 2024, 6:12 a.m.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-          
-                  <div class="card ">
-                    <div class="card-body">
-                      <p>Type your note, and hit enter to add it</p>
-          
-                      <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row align-items-center">
-                          <p class="small mb-0 ms-2">Johny</p>
-                        </div>
-                        <div class="d-flex flex-row align-items-center">
-                            <p class="small text-muted mb-0">July 3, 2024, 6:12 a.m.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="card mb-4">
-                    <div class="card-body">
-                      <p>No Comments Posted.</p>
-                    </div>
-                  </div> -->
-
 
                 </div>
               </div>
@@ -248,109 +181,6 @@
 
     </div>
   </div>
-
-<img src="{{listing.image.url}}" alt="{{listing.title}}" class="img-fluid">
-
-
-<h5>{{listing.description}}</h5>
-
-{% if listing.isListingOpen %}
-
-    <h5>{{listing.bidCurrentPrice}}</h5>
-
-    {% if user.is_authenticated %}
-
-        {% if creatorIsViewingTheList %}
-
-            <form action="{% url 'auctions:listing' listing.id %}" method="post">
-                {% csrf_token %}
-                <input class="btn btn-outline-warning" type="submit" value="Close">
-                <input type="hidden" name="isBidingForm" value="0">
-            </form>
-
-        {% else %}
-
-            <form action="{% url 'auctions:listing' listing.id%}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="isBidingForm" value="1">
-                
-                {% if currentBidder %}
-                    <p>{{numBids}} bid(s) so far. {{currentBidder}} bid is the current bid</p>
-                {% else %}
-                    <p>{{numBids}} bid(s) so far.</p>
-                {% endif %}
-                
-
-                <input type="number" min="0" step="0.01" name="bidPrice" placeholder="Bid">
-
-                {% if message %}
-                    {{message}}
-                {% endif %}
-                 
-                <input type="submit" value="Place Bid">
-            </form>
-        {% endif %}
-    
-    {% else %}
-
-    <a href="{% url 'auctions:login' %}">Login to place bid on this listing.</a>
-
-    {% endif %}
-    
-{% else %}
-
-    {% if listing.winner %}
-
-        {% if listing.winner == request.user %}
-            <p>Listing Closed at {{ listing.bidCurrentPrice }} with {{ numBids }} bid(s). You are the winner of this auction.</p>
-        {% else %}
-            <p>Listing Closed at {{ listing.bidCurrentPrice }} with {{ numBids }} bid(s). {{ listing.winner }} is the winner of this auction.</p>
-        {% endif %}
-
-    {% else %}
-        <p>Listing Closed at {{ listing.bidCurrentPrice }} with {{ numBids }} bid(s).</p>
-    {% endif %}
-
-{% endif %} 
-
-<!-- details section starts  -->
-
-<h5>Details</h5>
-
-<li>Listed by: <a href="{% url 'auctions:userProfile' listing.lister.username %}">{{ listing.lister }}</a></li>
-{% if listing.category %}
-   <li>Category:  <a href="{% url 'auctions:categoryListings' listing.category %}">{{listing.category}}</a></li>
-{% else %}
-    <li>Category: No Category Listed</li>
-{% endif %}
-<li>Created On: {{listing.time}}</li> 
-
-<!-- details section ends  -->
-
-
-<!-- comment section starts  -->
-
-<h5>Comments:</h5>
-{% for comment in comments %}
-	
-	<p>{{comment.writer}} on {{comment.time}}:</p>
-	<p>{{comment.content}}</p>
-	
-{% empty %}
-	(No Comments on this listing so far.)
-{% endfor %}
-
-{% if user.is_authenticated %}
-	<form action="{% url 'auctions:saveComment' listing.id %}" method="post">
-		{% csrf_token %}
-		<input type="text" name="comment" placeholder="Write Comment">
-		<input type="submit" value="Save">
-	</form>
-{% else %}
-	<a href="{% url 'auctions:login' %}">Login to write Comment on this listing.</a>
-{% endif %}
-
-<!-- comment section ends  -->
 
 
 {% endblock %}

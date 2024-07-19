@@ -1,34 +1,83 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
 
 {% block body %}
 
-    <h3>User Profile:</h3> 
-    
-    <h5>Username: {{userInfo.username}}</h5>
-    <h5>Email: {{userInfo.email}}</h5>
+    <h3 class="display-5 text-center mt-5">User Profile</h1>
+    <hr class="w-lg-25 w-50 mx-auto ">  
 
-    <h5>Listings Posted:</h5>
-    <h6>Active:</h6>
-    {% for listing in activeListings %}
-        {% if listing.image %}
-            <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
-        {% endif %}
-        {{listing.title}}
-        {{listing.bidCurrentPrice}}
-        {{listing.time}}
-    {% empty %}
-        No Active Listings
-    {% endfor %}
-    <h6>Closed:</h6>
-    {% for listing in closeListings %}
-        {% if listing.image %}
-            <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" alt="Photo of {{listing.title}}"></a> 
-        {% endif %}
-        {{listing.title}}
-        {{listing.bidCurrentPrice}}
-        {{listing.time}}
-    {% empty %}
-        No Closed Listings
-    {% endfor %}
+    <div class="user-info card container w-25" >
+        <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex flex-row justify-content-between"><div>Username</div> <div class="text-warning">{{userInfo.username}}</div></li>
+        <li class="list-group-item d-flex flex-row justify-content-between"><div>Email</div> <div class="text-warning">{{userInfo.email}}</div></li>
+        
+        </ul>
+    </div>
+
+<div class="container">
+    <h3 class="mt-5">Listings Posted:</h3>
+    <h5 class="mt-2 text-warning">Active:</h5>
+    <div class="container-fluid">
+        <div class="row">
+            {% for listing in activeListings %}
+            <div class="col-12">
+                <div class="card mb-3" >
+                    <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if listing.image %}
+                            <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
+                        {% else %}
+                            <a href="{% url 'auctions:listing' listing.id %}"><img src="{% static 'auctions/default.png' %}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                        <h5 class="card-title"><a class="hover-effect text-decoration-none" href="{% url 'auctions:listing' listing.id %}">{{listing.title}}</a></h5>
+                        <p class="card-text">Price: ${{listing.bidCurrentPrice}}</p>
+                        <p class="card-text"><small class="text-body-secondary">Listed On: {{listing.time}}</small></p>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <h5>No Active Listings To Show</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <h5 class="mt-2 text-warning">Closed:</h5>
+    <div class="container-fluid mb-3">
+        <div class="row">
+            {% for listing in closeListings %}
+            <div class="col-12">
+                <div class="card mb-3" >
+                    <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if listing.image %}
+                            <a href="{% url 'auctions:listing' listing.id %}"><img src="{{ listing.image.url }}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
+                        {% else %}
+                            <a href="{% url 'auctions:listing' listing.id %}"><img src="{% static 'auctions/default.png' %}" class="img-fluid rounded-start mx-auto d-block" alt="Photo of {{listing.title}}"></a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                        <h5 class="card-title"><a class="hover-effect text-decoration-none" href="{% url 'auctions:listing' listing.id %}">{{listing.title}}</a></h5>
+                        <p class="card-text">Price: ${{listing.bidCurrentPrice}}</p>
+                        <p class="card-text"><small class="text-body-secondary">Listed On: {{listing.time}}</small></p>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <h5>No Closed Listings To Show</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
 {% endblock %}

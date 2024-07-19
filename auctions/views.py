@@ -12,6 +12,13 @@ from .models import User, ListingInformation, Watchlist, Bid, Comment
 
 class ListingForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control mb-3'
+            visible.field.widget.attrs['placeholder'] = visible.field.label
+
+
     class Meta:
         labels = {
             "title":"Title",
@@ -26,7 +33,7 @@ class ListingForm(forms.ModelForm):
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": ListingInformation.objects.filter(isListingOpen = True).all(),
-        "message": "Acitive Listings"
+        "message": "Active Listings"
     })
 
 
@@ -210,7 +217,8 @@ def category(request, categoryName = None):
         categories = []
         allListingsWithCategory = ListingInformation.objects.exclude(category__isnull=True).exclude(category__exact='').filter(isListingOpen = True)
         for listing in allListingsWithCategory:
-            categories.append(listing.category)
+            if listing.category not in categories:
+                categories.append(listing.category)
         
         return render(request, 'auctions/category.html', {
             "categories": categories
