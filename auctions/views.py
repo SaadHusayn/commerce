@@ -3,32 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django import forms
 from django.contrib.auth.decorators import login_required
-import datetime
-from django.utils import timezone
-
+from .forms import ListingForm
 from .models import User, ListingInformation, Watchlist, Bid, Comment
-
-class ListingForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control mb-3'
-            visible.field.widget.attrs['placeholder'] = visible.field.label
-
-
-    class Meta:
-        labels = {
-            "title":"Title",
-            "description":"Description",
-            "bidCurrentPrice":"Initial Bid",
-            "image":"Item Image",
-            "category":"Category"
-        }
-        model = ListingInformation
-        fields = ['title', 'description', 'bidCurrentPrice', 'image', 'category']
+from .util import *
 
 def index(request):
     return render(request, "auctions/index.html", {
@@ -106,31 +84,6 @@ def createlisting(request):
         "ListingForm": form
     })
 
-def getCurrentBidder(listingID):
-    currentBidder = None
-    bids = Bid.objects.filter(listing_id = listingID)
-    if not bids:
-        pass
-    else:
-        currentBidder = bids.latest("id").bidder
-    
-    return currentBidder
-    
-def getRequestFlags(request, listingID):
-    watchlisted = False
-    creatorIsViewingTheList = False
-
-    if request.user.is_authenticated:
-        w = Watchlist.objects.filter(listing_id = listingID, user = request.user)
-
-        if not w:
-            watchlisted = False
-        else:
-            watchlisted = True
-
-        creatorIsViewingTheList = (request.user == ListingInformation.objects.get(pk = listingID).lister)
-    
-    return watchlisted, creatorIsViewingTheList
 
 def listing(request, listingID):
     listingObj = ListingInformation.objects.get(pk = listingID)
@@ -224,7 +177,7 @@ def category(request, categoryName = None):
             "categories": categories
         })
     else:
-        categoryListings = ListingInformation.objects.filter(category = categoryName)
+        categoryListings = ListingInformation.objects.filter(category = categoryName).filter(isListingOpen = True)
         return render(request, 'auctions/index.html', {
             "message": f"Category Listing: {categoryName}",
             "listings": categoryListings
